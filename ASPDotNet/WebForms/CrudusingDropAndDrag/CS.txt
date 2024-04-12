@@ -1,0 +1,73 @@
+using System;
+using System.Collections.Generic;
+using System.Configuration;
+using System.Data.SqlClient;
+using System.Data;
+using System.Linq;
+using System.Web;
+using System.Web.UI;
+using System.Web.UI.WebControls;
+
+namespace CrudApp.UsingSoftwareDragDrop
+{
+    public partial class myApp : System.Web.UI.Page
+    {
+        //unhandle delete and update or edit
+    
+
+        SqlConnection conn;
+        protected void Page_Load(object sender, EventArgs e)
+        {
+            string cs = ConfigurationManager.ConnectionStrings["shaikh1ConnectionString"].ConnectionString;
+            conn = new SqlConnection(cs);
+
+            if (!IsPostBack)
+            {
+                Display();
+            }
+
+
+        }
+
+
+        protected void Button1_Click(object sender, EventArgs e)
+        {
+
+            string Name = TextBox1.Text;
+            string Gender = TextBox2.Text;
+            int Age = Convert.ToInt32(TextBox3.Text);
+            //int Age = int.Parse(TextBox3.Text);
+
+
+            string query = "insert into Records values ('" + Name + "','" + Gender + "','" + Age + "')";
+            SqlCommand cmd = new SqlCommand(query, conn);
+            conn.Open();
+            cmd.ExecuteNonQuery();
+            conn.Close();
+            Display();
+
+
+
+
+
+        }
+
+        protected void Display()
+        {
+            string query = "select * from Records";
+            SqlCommand cmd = new SqlCommand(query, conn);
+
+
+            //we can also directly query inside the adapter
+            SqlDataAdapter adapter = new SqlDataAdapter(cmd);
+
+            DataTable dt = new DataTable();
+            adapter.Fill(dt);
+            GridView1.DataSourceID = null;
+            GridView1.DataSource = dt;
+            GridView1.DataBind();
+
+        }
+
+    }
+}
